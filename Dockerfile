@@ -16,7 +16,7 @@ RUN apt-get update && \
     libsqlite3-dev \
     curl \
     sqlite3 \
-    netcat \
+    netcat-openbsd \
     libssl-dev \
     libffi-dev \
     gcc \
