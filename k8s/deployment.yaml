@@ -1,0 +1,26 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: devops-python-deployment
+  labels:
+    app: devops-python
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: devops-python
+  template:
+    metadata:
+      labels:
+        app: devops-python
+    spec:
+      containers:
+        - name: devops-python-container
+          image: hack4u2/devsu-demo-devops-python:latest
+          ports:
+            - containerPort: 8000
+          env:
+            - name: DJANGO_SECRET_KEY
+              value: "Fi5tb5y-4iW01m7-x6lUqL6G-XLKFDz66cu-fXEZ3_A5AJPvtM9Wb1JjbwVSQCGee6I"
+            - name: DATABASE_NAME
+              value: "devsudb"
