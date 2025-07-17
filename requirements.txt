@@ -1,3 +1,14 @@
+# Aplicación principal
 django==4.2
-django-environ==0.10.0
 djangorestframework==3.14.0
+django-environ==0.10.0
+
+# Servidor para producción
+gunicorn>=20.1.0
+
+# Archivos estáticos en producción
+whitenoise>=6.6.0
+
+# Herramientas para pruebas (usadas en pipelines y desarrollo)
+pytest>=7.4.0
+pytest-django>=4.5.2
