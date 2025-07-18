@@ -26,7 +26,9 @@ jobs:
           pip install -r requirements.txt
 
       - name: 📌 Set environment variables
-        run: echo "DJANGO_SECRET_KEY=${{ secrets.DJANGO_SECRET_KEY }}" >> $GITHUB_ENV
+        run: |
+          echo "DJANGO_SECRET_KEY=${{ secrets.DJANGO_SECRET_KEY }}" >> $GITHUB_ENV
+          echo "DATABASE_NAME=db.sqlite3" >> $GITHUB_ENV
 
       - name: 🧪 Run tests
         run: |
