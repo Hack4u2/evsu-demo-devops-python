@@ -28,8 +28,8 @@ class UserViewSet(viewsets.ModelViewSet):
         """Create a new user unless DNI already exists."""
         data = request.data
 
-        if self.get_queryset().filter(dni=data.get('dni', '')).exists():
-            return Response({'detail': 'User already exists'}, status=400)
+        if self.get_queryset().filter(dni=data.get("dni", "")).exists():
+            return Response({"detail": "User already exists"}, status=400)
 
         serializer = self.get_serializer(data=data)
         serializer.is_valid(raise_exception=True)

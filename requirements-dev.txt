@@ -2,3 +2,5 @@ flake8
 coverage
 flake8-docstrings
 flake8-import-order
+black
+isort
