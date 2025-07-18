@@ -1,4 +1,4 @@
-name: CI/CD - Django with Docker Compose
+name: CI/CD – Django with Docker Compose
 
 on:
   push:
@@ -12,7 +12,7 @@ jobs:
   test-build-push:
     runs-on: ubuntu-latest
     steps:
-      - name: 📥 Checkout repo
+      - name: 🧾 Checkout repo
         uses: actions/checkout@v3
 
       - name: 🐍 Set up Python
@@ -25,9 +25,11 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
+      - name: 📌 Set environment variables
+        run: echo "DJANGO_SECRET_KEY=${{ secrets.DJANGO_SECRET_KEY }}" >> $GITHUB_ENV
+
       - name: 🧪 Run tests
         run: |
-          pip install -r requirements.txt
           python manage.py test
 
       - name: 🔐 Login to Docker Hub
@@ -35,6 +37,7 @@ jobs:
         with:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
+
       - name: 🛠️ Build and Push Docker image
         uses: docker/build-push-action@v5
         with:
