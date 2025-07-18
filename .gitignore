@@ -1,15 +1,67 @@
-# Archivos de Python
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Django stuff:
 *.log
 *.pot
 *.pyc
-__pycache__/
-
-# Base de datos local
+*.pyo
+*.pyd
+*.sqlite3
 db.sqlite3
 
-# Entorno virtual
-venv/
-
-# Variables de entorno
+# Environment variables
 .env
 .env.*
+
+# VSCode, JetBrains, etc.
+.vscode/
+.idea/
+
+# Docker-related
+*.pid
+*.pid.lock
+docker-compose.override.yml
+
+# Minikube and Kubernetes binaries or artifacts
+minikube*
+*.iso
+*.vmdk
+*.img
+*.tar
+*.tgz
+*.gz
+*.zip
+*.exe
+*.bin
+*.qcow2
+*.ova
+*.box
+
+# Virtual environments
+venv/
+ENV/
+env/
+
+# Build
+build/
+dist/
+*.egg-info/
+
+# Node modules (if using frontend tools)
+node_modules/
+
+# Coverage / test reports
+htmlcov/
+.coverage
+.tox/
+.nox/
+
+# Mac and Linux system files
+.DS_Store
+Thumbs.db
+
+# Git filter backup
+.git-rewrite/
