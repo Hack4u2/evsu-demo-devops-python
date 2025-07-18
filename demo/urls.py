@@ -1,11 +1,11 @@
-from django.urls import path
-from django.http import JsonResponse
+from django.urls import path, include
+from rest_framework import routers
+from .views import UserViewSet, healthcheck  # importa tu healthcheck también
 
-# Vista de healthcheck
-def healthcheck(request):
-    return JsonResponse({"status": "ok"})
+router = routers.DefaultRouter()
+router.register('users', UserViewSet, basename='users')
 
 urlpatterns = [
     path('health/', healthcheck),
-    # tus otras rutas...
+    path('', include(router.urls)),
 ]
