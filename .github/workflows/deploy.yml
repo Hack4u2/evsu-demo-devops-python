@@ -9,7 +9,7 @@ on:
       - main
 
 jobs:
-  test-build-push:
+  test:
     runs-on: ubuntu-latest
     steps:
       - name: 🧾 Checkout repo
@@ -29,10 +29,18 @@ jobs:
         run: |
           echo "DJANGO_SECRET_KEY=${{ secrets.DJANGO_SECRET_KEY }}" >> $GITHUB_ENV
           echo "DATABASE_NAME=db.sqlite3" >> $GITHUB_ENV
-
+          echo "ALLOWED_HOSTS=0.0.0.0,localhost" >> $GITHUB_ENV
+          
       - name: 🧪 Run tests
         run: |
           python manage.py test
+
+  deploy:
+    runs-on: ubuntu-latest
+    needs: test  
+    steps:
+      - name: 🧾 Checkout repo
+        uses: actions/checkout@v3
 
       - name: 🔐 Login to Docker Hub
         uses: docker/login-action@v3
