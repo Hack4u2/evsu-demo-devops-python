@@ -6,6 +6,6 @@ router = routers.DefaultRouter()
 router.register('users', UserViewSet, basename='users')
 
 urlpatterns = [
-    path('health/', health_check),
+    path('api/health/', health_check),
     path('', include(router.urls)),
 ]

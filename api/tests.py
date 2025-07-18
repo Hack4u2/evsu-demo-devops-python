@@ -36,3 +36,8 @@ class TestUserView(APITestCase):
         response = self.client.get(self.url + '999/')
         self.assertEqual(response.status_code, 404)
         self.assertIn('detail', json.loads(response.content))
+
+    def test_health_check(self):
+        response = self.client.get("/api/health/")
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(json.loads(response.content), {"status": "ok"})
