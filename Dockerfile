@@ -24,22 +24,29 @@ RUN apt-get update && \
     && rm -rf /var/lib/apt/lists/*
 
 # Crear usuario sin privilegios
-RUN adduser --disabled-password --gecos '' appuser
+RUN adduser --disabled-password --gecos '' appuser && \
+    mkdir -p /app && chown -R appuser:appuser /app
+
+# Cambiar al usuario sin privilegios
 USER appuser
 
 # Copiar e instalar dependencias
 COPY --chown=appuser:appuser requirements.txt .
-RUN pip install --upgrade pip && pip install -r requirements.txt
+RUN pip install --upgrade pip && pip install --no-cache-dir -r requirements.txt
 
-# Copiar todo el código
+# Copiar e instalar dependencias de desarrollo si existen
+COPY --chown=appuser:appuser requirements-dev.txt ./
+RUN if [ -f requirements-dev.txt ]; then pip install -r requirements-dev.txt; fi
+
+# Copiar todo el código fuente
 COPY --chown=appuser:appuser . .
 
-# Exponer puerto configurable
+# Exponer el puerto configurado
 EXPOSE ${PORT}
 
-# Healthcheck sencillo (requiere endpoint saludable en Django como /health/)
+# Healthcheck a endpoint existente
 HEALTHCHECK --interval=30s --timeout=10s --start-period=10s --retries=3 \
-  CMD curl --fail http://localhost:${PORT}/ || exit 1
+  CMD curl --fail http://localhost:${PORT}/health/ || exit 1
 
 # Comando por defecto
 CMD ["python", "manage.py", "runserver", "0.0.0.0:8000"]
