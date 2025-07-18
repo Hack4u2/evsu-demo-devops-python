@@ -1,3 +1,4 @@
+from django.http import JsonResponse
 from rest_framework import viewsets, status
 from rest_framework.response import Response
 from .serializers import UserSerializer
@@ -26,3 +27,6 @@ class UserViewSet(viewsets.ModelViewSet):
         serializer.save()
 
         return Response(serializer.data, status=201)
+
+def health_check(request):
+    return JsonResponse({"status": "ok"})

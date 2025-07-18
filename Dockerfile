@@ -1,9 +1,10 @@
 # Imagen base ligera con Python 3.11
 FROM python:3.11-slim
 
-# Establece variables de entorno
-ENV PYTHONDONTWRITEBYTECODE=1
-ENV PYTHONUNBUFFERED=1
+# Variables de entorno seguras por defecto
+ENV PYTHONDONTWRITEBYTECODE=1 \
+    PYTHONUNBUFFERED=1 \
+    PORT=8000
 
 # Establece el directorio de trabajo
 WORKDIR /app
@@ -22,16 +23,23 @@ RUN apt-get update && \
     gcc \
     && rm -rf /var/lib/apt/lists/*
 
-# Copia el archivo de requerimientos y lo instala
-COPY requirements.txt .
+# Crear usuario sin privilegios
+RUN adduser --disabled-password --gecos '' appuser
+USER appuser
 
+# Copiar e instalar dependencias
+COPY --chown=appuser:appuser requirements.txt .
 RUN pip install --upgrade pip && pip install -r requirements.txt
 
-# Copia el resto del código del proyecto
-COPY . .
+# Copiar todo el código
+COPY --chown=appuser:appuser . .
 
-# Expone el puerto de Django
-EXPOSE 8000
+# Exponer puerto configurable
+EXPOSE ${PORT}
 
-# Comando por defecto para ejecutar el servidor
+# Healthcheck sencillo (requiere endpoint saludable en Django como /health/)
+HEALTHCHECK --interval=30s --timeout=10s --start-period=10s --retries=3 \
+  CMD curl --fail http://localhost:${PORT}/ || exit 1
+
+# Comando por defecto
 CMD ["python", "manage.py", "runserver", "0.0.0.0:8000"]
