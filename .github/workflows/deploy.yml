@@ -68,9 +68,10 @@ jobs:
           credentials_json: ${{ secrets.GCP_SA_KEY }}
           project_id: ${{ secrets.GCP_PROJECT_ID }}
 
-      - name: Set up Google Cloud SDK using Docker
+      - name: Install gke-gcloud-auth-plugin using apt-get
         run: |
-          docker run --rm -v $HOME/.config/gcloud:/root/.config/gcloud google/cloud-sdk gcloud components install gke-gcloud-auth-plugin
+          sudo apt-get update
+          sudo apt-get install google-cloud-cli-gke-gcloud-auth-plugin
 
       - name: 📦 Configure kubectl
         run: |
