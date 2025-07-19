@@ -5,7 +5,7 @@ metadata:
   labels:
     app: devops-python
 spec:
-  replicas: 1
+  replicas: 2
   selector:
     matchLabels:
       app: devops-python
@@ -21,6 +21,13 @@ spec:
             - containerPort: 8000
           env:
             - name: DJANGO_SECRET_KEY
-              value: "Fi5tb5y-4iW01m7-x6lUqL6G-XLKFDz66cu-fXEZ3_A5AJPvtM9Wb1JjbwVSQCGee6I"
+              value: "Fi5tb5y-4iW01m7-x6lUqL6G-XLKFDz66cu-fXEZ3_A5AJPvtM9Wb1JjbWSQCGeo6I"
             - name: DATABASE_NAME
-              value: "devsudb"
+              value: "devsub"
+            - name: ALLOWED_HOSTS
+              value: "localhost,127.0.0.1,0.0.0.0,192.168.49.2,devops.internal"
+          resources:
+            requests:
+              cpu: "100m"
+            limits:
+              cpu: "500m"
