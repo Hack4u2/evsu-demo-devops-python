@@ -1,4 +1,4 @@
-name: CI/CD – Django with Docker Compose
+name: CI/CD – Django with Docker Compose and GKE
 
 on:
   push:
@@ -7,6 +7,13 @@ on:
   pull_request:
     branches:
       - main
+
+env: # <--- ¡Añadimos estas variables de entorno globales!
+  PROJECT_ID: dynamic-circle-340414 # Tu Project ID de Google Cloud
+  GKE_CLUSTER: autopilot-cluster-1  # El nombre de tu clúster GKE
+  GKE_REGION: us-central1         # La región de tu clúster GKE
+  DOCKER_IMAGE_NAME: hack4u2/devsu-demo-devops-python # Nombre base de tu imagen Docker
+  # Asegúrate de que este nombre de imagen coincide con el que usarás en tu Deployment de Kubernetes
 
 jobs:
   test:
@@ -48,6 +55,28 @@ jobs:
       - name: 🧾 Checkout repo
         uses: actions/checkout@v3
 
+      # --- Autenticación y configuración para Google Cloud y GKE ---
+      - name: 🔐 Google Cloud Authentication
+        uses: google-github-actions/auth@v2
+        with:
+          # Es CRÍTICO que GCP_SA_KEY sea el JSON completo y válido
+          credentials_json: ${{ secrets.GCP_SA_KEY }}
+          # project_id NO es necesario aquí si ya está en la clave JSON o se configura globalmente
+          # Pero no hace daño si lo dejas. Lo definimos como env.PROJECT_ID arriba.
+          # project_id: ${{ env.PROJECT_ID }} # <-- Se puede omitir aquí si GCP_SA_KEY tiene el Project ID.
+
+      - name: 📦 Configure kubectl for GKE
+        uses: google-github-actions/get-gke-credentials@v2
+        with:
+          cluster_name: ${{ env.GKE_CLUSTER }}
+          location: ${{ env.GKE_REGION }} # Para clústeres regionales, usa --region. Para zonales, usa --zone.
+                                        # Como es Autopilot, `--region` es lo correcto.
+          project_id: ${{ env.PROJECT_ID }}
+      # --- FIN Autenticación y configuración para Google Cloud y GKE ---
+
+
+      # --- Revisa esta parte para la autenticación de Docker Hub vs. Google Artifact Registry ---
+      # Si tu imagen de Docker YA ESTÁ en Docker Hub y solo la vas a usar desde allí:
       - name: 🔐 Login to Docker Hub
         uses: docker/login-action@v3
         with:
@@ -60,31 +89,30 @@ jobs:
           context: .
           file: ./Dockerfile
           push: true
-          tags: hack4u2/devsu-demo-devops-python:latest
+          # IMPORTANTE: Usamos el mismo tag 'latest' que en el Dockerfile
+          # Si quieres versionar, usa algo como ${{ env.DOCKER_IMAGE_NAME }}:${{ github.sha }}
+          tags: ${{ env.DOCKER_IMAGE_NAME }}:latest
 
-      - name: 🛠️ Set up Google Cloud SDK
-        uses: google-github-actions/auth@v2
-        with:
-          credentials_json: ${{ secrets.GCP_SA_KEY }}
-          project_id: ${{ secrets.GCP_PROJECT_ID }}
+      # --- ALTERNATIVA: Si quieres usar Google Artifact Registry (MÁS RECOMENDADO para GKE) ---
+      # Si quieres publicar tu imagen en Google Artifact Registry (o Container Registry),
+      # DEBERÍAS eliminar los pasos de Docker Hub (Login y Build/Push) y usar esto:
+      # - name: 🔐 Authenticate Docker to Google Artifact Registry
+      #   run: gcloud auth configure-docker us-central1-docker.pkg.dev # Ajusta la región de tu registry si es diferente
+      #   # Necesitarás los permisos 'Artifact Registry Writer' o 'Storage Admin' para tu Service Account.
 
-      - name: 📦 Install gke-gcloud-auth-plugin
-        run: |
-          # Instalar el plugin necesario para usar kubectl con GKE
-          sudo apt-get update
-          sudo apt-get install google-cloud-sdk-gke-gcloud-auth-plugin
+      # - name: 🛠️ Build and Push Docker image to Artifact Registry
+      #   run: |
+      #     docker build -t us-central1-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.DOCKER_IMAGE_NAME }}:${{ github.sha }} . # o :latest
+      #     docker push us-central1-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.DOCKER_IMAGE_NAME }}:${{ github.sha }} # o :latest
+      # --- FIN ALTERNATIVA ---
 
-      - name: 📦 Configure kubectl using gcloud auth
-        run: |
-          # Configurar kubectl usando la autenticación de Google Cloud
-          gcloud container clusters get-credentials autopilot-cluster-1 --region us-central1 --project ${{ secrets.GCP_PROJECT_ID }}
 
       - name: 🚀 Deploy to Kubernetes
-        run: |
-          # Asegurarse de que kubectl esté correctamente configurado y desplegar
-          kubectl get nodes  # Esto verifica que kubectl esté apuntando correctamente a tu clúster
-          bash .github/scripts/deploy.sh
-        env:
-          K8S_API_SERVER: ${{ secrets.K8S_API_SERVER }}
-          K8S_TOKEN: ${{ secrets.K8S_TOKEN }}
-
+        # Aquí ya no necesitas K8S_API_SERVER ni K8S_TOKEN,
+        # porque get-gke-credentials ya configuró kubectl.
+        # Asegúrate de que tu script deploy.sh NO intente cambiar de contexto a "minikube"
+        # y que use comandos kubectl directamente (ej. kubectl apply -f ...).
+        run: bash .github/scripts/deploy.sh
+        # env: # <--- Puedes eliminar estas variables de entorno si no se usan en deploy.sh
+        #   K8S_API_SERVER: ${{ secrets.K8S_API_SERVER }}
+        #   K8S_TOKEN: ${{ secrets.K8S_TOKEN }}
