@@ -1,4 +1,4 @@
-kname: CI/CD – Django with Docker Compose
+name: CI/CD – Django with Docker Compose
 
 on:
   push:
