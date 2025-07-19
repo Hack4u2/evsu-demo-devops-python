@@ -65,9 +65,19 @@ jobs:
           push: true
           tags: hack4u2/devsu-demo-devops-python:latest
 
+      - name: 🛠️ Set up Google Cloud SDK
+        uses: google-github-actions/setup-gcloud@v0.3.0
+        with:
+          project_id: ${{ secrets.GCP_PROJECT_ID }}
+          credentials_json: ${{ secrets.GCP_SA_KEY }}
+          export_default_credentials: true
+
+      - name: 📦 Configure kubectl
+        run: |
+          gcloud container clusters get-credentials autopilot-cluster-1 --region us-central1 --project ${{ secrets.GCP_PROJECT_ID }}
+
       - name: 🚀 Deploy to Kubernetes
         run: bash .github/scripts/deploy.sh
         env:
           K8S_API_SERVER: ${{ secrets.K8S_API_SERVER }}
           K8S_TOKEN: ${{ secrets.K8S_TOKEN }}
-
