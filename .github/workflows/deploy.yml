@@ -1,4 +1,4 @@
-name: CI/CD – Django with Docker Compose
+kname: CI/CD – Django with Docker Compose
 
 on:
   push:
@@ -68,6 +68,12 @@ jobs:
           credentials_json: ${{ secrets.GCP_SA_KEY }}
           project_id: ${{ secrets.GCP_PROJECT_ID }}
 
+      - name: 📦 Install gke-gcloud-auth-plugin
+        run: |
+          # Instalar el plugin necesario para usar kubectl con GKE
+          sudo apt-get update
+          sudo apt-get install google-cloud-sdk-gke-gcloud-auth-plugin
+
       - name: 📦 Configure kubectl using gcloud auth
         run: |
           # Configurar kubectl usando la autenticación de Google Cloud
@@ -81,3 +87,4 @@ jobs:
         env:
           K8S_API_SERVER: ${{ secrets.K8S_API_SERVER }}
           K8S_TOKEN: ${{ secrets.K8S_TOKEN }}
+
