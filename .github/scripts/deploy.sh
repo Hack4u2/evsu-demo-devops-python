@@ -1,9 +1,7 @@
-#!/bin/bash
+kk#!/bin/bash
 set -e
 
 echo "📦 Aplicando configuración de Kubernetes..."
-
-# Se asume que kubectl ya está configurado para el clúster GKE por los pasos previos del workflow.
 
 echo "🔍 Verificando acceso al cluster GKE..."
 if ! kubectl version --client &>/dev/null; then
@@ -12,6 +10,7 @@ if ! kubectl version --client &>/dev/null; then
 fi
 
 echo "🚀 Aplicando manifiestos YAML..."
+# Asumiendo que k8s/00-namespace.yaml se procesará primero
 kubectl apply -f k8s/
 
 echo "✅ Configuración aplicada con éxito en GKE."
