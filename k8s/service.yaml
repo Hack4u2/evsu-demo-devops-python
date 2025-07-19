@@ -2,11 +2,12 @@ apiVersion: v1
 kind: Service
 metadata:
   name: devops-python-service
+  namespace: django-namespace
 spec:
-  type: NodePort
+  type: LoadBalancer
   selector:
     app: devops-python
   ports:
-    - port: 80
+    - protocol: TCP
+      port: 80
       targetPort: 8000
-      nodePort: 30080
