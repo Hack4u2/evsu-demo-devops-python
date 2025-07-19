@@ -70,12 +70,13 @@ jobs:
 
       - name: 📦 Configure kubectl using gcloud auth
         run: |
-          # Aseguramos que los saltos de línea se manejen correctamente
+          # Asegurarse de que los saltos de línea se manejen correctamente en las credenciales
           echo "${{ secrets.GCP_SA_KEY }}" | sed 's/\\n/\n/g' > /tmp/gcp-key.json
-          # Verificamos el contenido del archivo JSON para asegurarnos de que esté bien formado
+
+          # Verificar el contenido del archivo JSON antes de usarlo
           cat /tmp/gcp-key.json
-          
-          # Activar la cuenta de servicio con el archivo JSON decodificado
+
+          # Activar la cuenta de servicio
           gcloud auth activate-service-account --key-file=/tmp/gcp-key.json
           
           # Configurar kubectl
