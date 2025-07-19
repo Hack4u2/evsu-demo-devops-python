@@ -12,5 +12,7 @@ if ! kubectl version --client &>/dev/null; then
   exit 1
 fi
 
+kubectl config use-context minikube
+
 echo "🚀 Aplicando manifiestos YAML..."
 kubectl apply -f k8s/
