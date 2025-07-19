@@ -6,7 +6,7 @@ metadata:
   labels:
     app: devops-python
 spec:
-  replicas: 2
+  replicas: 1
   selector:
     matchLabels:
       app: devops-python
@@ -14,7 +14,7 @@ spec:
     metadata:
       labels:
         app: devops-python
-    spec:
+    spec: 
       containers:
         - name: devops-python-container
           image: hack4u2/devsu-demo-devops-python:latest
@@ -24,11 +24,21 @@ spec:
             - name: DJANGO_SECRET_KEY
               value: "Fi5tb5y-4iW01m7-x6lUqL6G-XLKFDz66cu-fXEZ3_A5AJPvtM9Wb1JjbWSQCGeo6I"
             - name: DATABASE_NAME
-              value: "devsub"
+              value: "db.sqlite3"
             - name: ALLOWED_HOSTS
               value: "localhost,127.0.0.1,0.0.0.0,35.224.122.238"
+          command: ["sh", "-c"]
+          args:
+            - python manage.py migrate --noinput && gunicorn demo.wsgi:application --bind 0.0.0.0:${PORT}
           resources:
             requests:
               cpu: "100m"
             limits:
               cpu: "500m"
+          volumeMounts: 
+            - name: django-persistent-storage
+              mountPath: /app
+      volumes: 
+        - name: django-persistent-storage
+          persistentVolumeClaim:
+            claimName: django-db-pvc
