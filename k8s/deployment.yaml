@@ -26,7 +26,7 @@ spec:
             - name: DATABASE_NAME
               value: "devsub"
             - name: ALLOWED_HOSTS
-              value: "localhost,127.0.0.1,0.0.0.0,192.168.49.2,devops.internal"
+              value: "localhost,127.0.0.1,0.0.0.0,35.224.122.238"
           resources:
             requests:
               cpu: "100m"
