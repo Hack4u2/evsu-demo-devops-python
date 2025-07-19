@@ -35,7 +35,7 @@ jobs:
       - name: 📏 Run flake8 (lint)
         run: |
           flake8 . --exclude=venv,migrations --max-line-length=120
-          
+
       - name: ✅ Run tests with coverage
         run: |
           coverage run manage.py test
@@ -74,7 +74,10 @@ jobs:
           gcloud container clusters get-credentials autopilot-cluster-1 --region us-central1 --project ${{ secrets.GCP_PROJECT_ID }}
 
       - name: 🚀 Deploy to Kubernetes
-        run: bash .github/scripts/deploy.sh
+        run: |
+          # Asegurarse de que kubectl esté correctamente configurado y desplegar
+          kubectl get nodes  # Esto verifica que kubectl esté apuntando correctamente a tu clúster
+          bash .github/scripts/deploy.sh
         env:
           K8S_API_SERVER: ${{ secrets.K8S_API_SERVER }}
           K8S_TOKEN: ${{ secrets.K8S_TOKEN }}
