@@ -46,7 +46,7 @@ EXPOSE ${PORT}
 
 # Healthcheck a endpoint existente
 HEALTHCHECK --interval=30s --timeout=10s --start-period=10s --retries=3 \
-  CMD curl --fail http://localhost:${PORT}/health/ || exit 1
+    CMD curl --fail http://localhost:${PORT}/health/ || exit 1
 
-# Comando por defecto
-CMD ["python", "manage.py", "runserver", "0.0.0.0:8000"]
+# Comando por defecto: Ejecuta migraciones y luego inicia Gunicorn
+CMD ["sh", "-c", "python manage.py migrate --noinput && gunicorn demo.wsgi:application --bind 0.0.0.0:${PORT}"]
