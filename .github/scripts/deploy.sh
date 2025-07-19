@@ -3,16 +3,15 @@ set -e
 
 echo "📦 Aplicando configuración de Kubernetes..."
 
-# Forzar el contexto de Minikube
-kubectl config use-context minikube
+# Se asume que kubectl ya está configurado para el clúster GKE por los pasos previos del workflow.
 
-echo "🔍 Verificando acceso al cluster..."
+echo "🔍 Verificando acceso al cluster GKE..."
 if ! kubectl version --client &>/dev/null; then
-  echo "❌ No se pudo acceder al cluster. Revisa si Minikube está corriendo con 'minikube status'."
+  echo "❌ No se pudo acceder al cluster GKE. Asegúrate de que las credenciales son correctas."
   exit 1
 fi
 
-kubectl config use-context minikube
-
 echo "🚀 Aplicando manifiestos YAML..."
 kubectl apply -f k8s/
+
+echo "✅ Configuración aplicada con éxito en GKE."
