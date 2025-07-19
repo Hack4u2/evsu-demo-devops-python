@@ -1,4 +1,4 @@
-name: CI/CD – Django with Docker Compose
+kname: CI/CD – Django with Docker Compose
 
 on:
   push:
@@ -64,3 +64,10 @@ jobs:
           file: ./Dockerfile
           push: true
           tags: hack4u2/devsu-demo-devops-python:latest
+
+      - name: 🚀 Deploy to Kubernetes
+        run: bash .github/scripts/deploy.sh
+        env:
+          K8S_API_SERVER: ${{ secrets.K8S_API_SERVER }}
+          K8S_TOKEN: ${{ secrets.K8S_TOKEN }}
+
