@@ -70,8 +70,15 @@ jobs:
 
       - name: 📦 Configure kubectl using gcloud auth
         run: |
+          # Aseguramos que los saltos de línea se manejen correctamente
           echo "${{ secrets.GCP_SA_KEY }}" | sed 's/\\n/\n/g' > /tmp/gcp-key.json
+          # Verificamos el contenido del archivo JSON para asegurarnos de que esté bien formado
+          cat /tmp/gcp-key.json
+          
+          # Activar la cuenta de servicio con el archivo JSON decodificado
           gcloud auth activate-service-account --key-file=/tmp/gcp-key.json
+          
+          # Configurar kubectl
           gcloud container clusters get-credentials autopilot-cluster-1 --region us-central1 --project ${{ secrets.GCP_PROJECT_ID }}
 
       - name: 🚀 Deploy to Kubernetes
